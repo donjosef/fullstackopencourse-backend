@@ -1,6 +1,8 @@
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+
 
 let persons = [
     {
@@ -28,6 +30,7 @@ let persons = [
 const app = express();
 
 app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'build')));
 app.use((req, res, next) => {
     res.set({
         'Access-Control-Allow-Origin': '*',
@@ -84,11 +87,11 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
     const person = req.body;
     const existingPerson = persons.find(p => p.name === person.name);
-
+    
     if (existingPerson) {
         return res.status(409).json({ error: 'Person name already exists in phonebook' })
     }
-
+    
     if (!person.name || !person.number) {
         return res.status(400).json({ error: 'Person name or number missing.' })
     }
